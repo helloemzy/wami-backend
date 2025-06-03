@@ -2,7 +2,7 @@ const axios = require('axios');
 
 class AIService {
   constructor() {
-    this.apiKey = process.env.OPENAI_API_KEY; // Change this
+    this.apiKey = process.env.OPENAI_API_KEY;
     this.baseURL = 'https://api.openai.com/v1/chat/completions';
   }
 
@@ -11,13 +11,13 @@ class AIService {
     
     try {
       const response = await axios.post(this.baseURL, {
-        model: "gpt-4o", // OpenAI's vision model
+        model: "gpt-4o",
         messages: [{
           role: "user",
           content: [
             {
               type: "text",
-              text: `Analyze this wine bottle label and extract the following information. Return ONLY a valid JSON object with these exact fields:
+              text: `Analyze this wine bottle label and extract wine information. Return ONLY a valid JSON object with these exact fields:
               {
                 "name": "wine name",
                 "winemaker": "producer/winery name", 
@@ -80,7 +80,25 @@ class AIService {
     }
   }
 
-  // ... rest of the code stays the same
+  async enrichWineData(extractedData) {
+    if (!extractedData.name || !extractedData.winemaker) {
+      return {
+        description: 'Wine information extracted from label',
+        confidence: 0.3
+      };
+    }
+
+    const description = `${extractedData.wineType || 'Wine'} from ${extractedData.winemaker}${
+      extractedData.region ? `, ${extractedData.region}` : ''
+    }${extractedData.country ? `, ${extractedData.country}` : ''}${
+      extractedData.vintage ? ` (${extractedData.vintage})` : ''
+    }.`;
+
+    return {
+      description,
+      confidence: Math.min(extractedData.confidence + 0.1, 1.0)
+    };
+  }
 }
 
 module.exports = AIService;
