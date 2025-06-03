@@ -2,8 +2,8 @@ const axios = require('axios');
 
 class AIService {
   constructor() {
-    this.apiKey = process.env.DEEPSEEK_API_KEY;
-    this.baseURL = 'https://api.deepseek.com/chat/completions'; // Fixed URL
+    this.apiKey = process.env.OPENAI_API_KEY; // Change this
+    this.baseURL = 'https://api.openai.com/v1/chat/completions';
   }
 
   async extractWineData(imageBase64) {
@@ -11,7 +11,7 @@ class AIService {
     
     try {
       const response = await axios.post(this.baseURL, {
-        model: "deepseek-chat", // Fixed model name
+        model: "gpt-4o", // OpenAI's vision model
         messages: [{
           role: "user",
           content: [
@@ -40,8 +40,7 @@ class AIService {
             }
           ]
         }],
-        max_tokens: 500,
-        temperature: 0.1
+        max_tokens: 500
       }, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -81,7 +80,7 @@ class AIService {
     }
   }
 
-  // Rest of the code stays the same...
+  // ... rest of the code stays the same
 }
 
 module.exports = AIService;
